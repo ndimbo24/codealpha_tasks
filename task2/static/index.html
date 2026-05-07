@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mtindo Fashion — FAQ Chatbot</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ── Reset & Base ─────────────────────────────────────────────────────────── */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --gold:        #c9a96e;
+  --gold-light:  #e2c898;
+  --gold-dim:    rgba(201,169,110,0.15);
+  --gold-border: rgba(201,169,110,0.30);
+  --bg:          #0c0c0c;
+  --surface:     #141414;
+  --surface2:    #1c1c1c;
+  --surface3:    #242424;
+  --text:        #ede8df;
+  --text-muted:  #888;
+  --text-dim:    #444;
+  --radius:      14px;
+  --radius-sm:   8px;
+  --shadow:      0 24px 64px rgba(0,0,0,0.5);
+}
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  font-family: 'Outfit', sans-serif;
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Layout ──────────────────────────────────────────────────────────────── */
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 16px;
+}
+
+.shell {
+  width: 100%;
+  max-width: 720px;
+  height: 94vh;
+  max-height: 860px;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 0.5px solid rgba(255,255,255,0.08);
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  position: relative;
+}
+
+/* ── Decorative top accent line ─────────────────────────────────────────── */
+.shell::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 15%; right: 15%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  z-index: 10;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 22px;
+  background: var(--surface);
+  border-bottom: 0.5px solid rgba(255,255,255,0.06);
+  flex-shrink: 0;
+}
+
+.logo {
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  background: var(--gold-dim);
+  border: 1px solid var(--gold-border);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--gold);
+  flex-shrink: 0;
+  letter-spacing: -0.5px;
+}
+
+.header-info h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0.3px;
+}
+
+.header-info p {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 300;
+  margin-top: 1px;
+}
+
+.header-badges {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.badge {
+  font-size: 10px;
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-weight: 400;
+  letter-spacing: 0.3px;
+}
+
+.badge-lang {
+  border: 0.5px solid var(--gold-border);
+  color: var(--gold);
+  background: var(--gold-dim);
+}
+
+.badge-nlp {
+  border: 0.5px solid rgba(100,200,120,0.3);
+  color: #7ed89a;
+  background: rgba(100,200,120,0.07);
+}
+
+.status {
+  width: 8px; height: 8px;
+  background: #4ade80;
+  border-radius: 50%;
+  animation: glow-pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes glow-pulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(74,222,128,0); opacity:1; }
+  50%      { box-shadow: 0 0 0 4px rgba(74,222,128,0.2); opacity:0.6; }
+}
+
+/* ── Chat Area ───────────────────────────────────────────────────────────── */
+.chat {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 20px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--surface3) transparent;
+}
+.chat::-webkit-scrollbar { width: 3px; }
+.chat::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 2px; }
+
+/* ── Welcome ─────────────────────────────────────────────────────────────── */
+.welcome {
+  text-align: center;
+  padding: 18px 12px 6px;
+  animation: fadeIn 0.6s ease;
+}
+.welcome-icon {
+  font-size: 36px;
+  margin-bottom: 10px;
+  display: block;
+}
+.welcome h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--gold);
+  margin-bottom: 5px;
+  letter-spacing: 0.5px;
+}
+.welcome p {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 300;
+  line-height: 1.6;
+}
+
+@keyframes fadeIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:none} }
+
+/* ── Messages ────────────────────────────────────────────────────────────── */
+.msg-row {
+  display: flex;
+  gap: 10px;
+  animation: msgIn 0.28s cubic-bezier(.22,1,.36,1);
+}
+@keyframes msgIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
+
+.msg-row.user { flex-direction: row-reverse; }
+
+.avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  align-self: flex-end;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 500;
+}
+.avatar.bot {
+  background: var(--gold-dim);
+  border: 0.5px solid var(--gold-border);
+  color: var(--gold);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 15px;
+}
+.avatar.user {
+  background: rgba(240,236,228,0.07);
+  border: 0.5px solid rgba(240,236,228,0.12);
+  color: var(--text-muted);
+}
+
+.bubble {
+  max-width: 74%;
+  padding: 12px 16px;
+  font-size: 14px;
+  line-height: 1.7;
+  font-weight: 300;
+  position: relative;
+}
+
+.bubble.bot {
+  background: var(--surface2);
+  border: 0.5px solid rgba(255,255,255,0.06);
+  border-radius: 4px 16px 16px 16px;
+  color: #e8e2d8;
+}
+
+.bubble.user {
+  background: var(--gold);
+  color: #1a1a1a;
+  font-weight: 400;
+  border-radius: 16px 4px 16px 16px;
+}
+
+.bubble.error {
+  background: #1f1414;
+  border-color: rgba(228,74,74,0.2);
+  color: #f09090;
+}
+
+/* ── Meta chip under bot bubble ─────────────────────────────────────────── */
+.meta {
+  font-size: 10px;
+  color: var(--text-dim);
+  margin-top: 4px;
+  margin-left: 42px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.meta-chip {
+  padding: 1px 6px;
+  border-radius: 10px;
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.2px;
+}
+.chip-high   { background: rgba(100,200,120,0.1); color:#7ed89a; border: 0.5px solid rgba(100,200,120,0.2); }
+.chip-medium { background: rgba(201,169,110,0.1); color:var(--gold); border: 0.5px solid var(--gold-border); }
+.chip-low    { background: rgba(228,74,74,0.1);   color:#f09090;  border: 0.5px solid rgba(228,74,74,0.2); }
+.chip-cat    { background: var(--surface3); color:var(--text-muted); border: 0.5px solid rgba(255,255,255,0.06); }
+
+/* ── Typing Indicator ────────────────────────────────────────────────────── */
+.typing-row { display:flex; gap:10px; align-items:flex-end; animation:msgIn 0.2s ease; }
+.typing-bubble {
+  padding: 13px 18px;
+  background: var(--surface2);
+  border: 0.5px solid rgba(255,255,255,0.06);
+  border-radius: 4px 16px 16px 16px;
+  display: flex; gap: 5px; align-items: center;
+}
+.dot {
+  width: 6px; height: 6px;
+  background: var(--gold);
+  border-radius: 50%;
+  animation: bounce 1.3s ease-in-out infinite;
+  opacity: 0.4;
+}
+.dot:nth-child(2) { animation-delay:.22s }
+.dot:nth-child(3) { animation-delay:.44s }
+@keyframes bounce {
+  0%,60%,100% { transform:translateY(0); opacity:.35; }
+  30%          { transform:translateY(-6px); opacity:1; }
+}
+
+/* ── Suggestions ─────────────────────────────────────────────────────────── */
+.suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  padding: 6px 20px 12px;
+  flex-shrink: 0;
+}
+.sug {
+  font-family: 'Outfit', sans-serif;
+  font-size: 11.5px;
+  padding: 6px 13px;
+  border-radius: 20px;
+  border: 0.5px solid var(--gold-border);
+  background: var(--gold-dim);
+  color: var(--gold);
+  cursor: pointer;
+  font-weight: 300;
+  transition: background .18s, border-color .18s, transform .12s;
+  white-space: nowrap;
+}
+.sug:hover { background: rgba(201,169,110,0.2); border-color: rgba(201,169,110,0.5); transform: translateY(-1px); }
+.sug:active { transform: scale(0.97); }
+
+/* ── Debug Panel ─────────────────────────────────────────────────────────── */
+.debug-panel {
+  background: var(--surface2);
+  border-top: 0.5px solid rgba(255,255,255,0.06);
+  padding: 8px 20px;
+  flex-shrink: 0;
+  display: none;
+}
+.debug-panel.visible { display: block; }
+.debug-panel p {
+  font-family: 'Outfit', monospace;
+  font-size: 10px;
+  color: var(--text-dim);
+  line-height: 1.8;
+}
+.debug-panel span { color: var(--gold-light); }
+
+/* ── Input Row ───────────────────────────────────────────────────────────── */
+.input-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  padding: 12px 16px;
+  background: #0e0e0e;
+  border-top: 0.5px solid rgba(255,255,255,0.05);
+  flex-shrink: 0;
+}
+
+#msgInput {
+  flex: 1;
+  background: var(--surface2);
+  border: 0.5px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 11px 16px;
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+  resize: none;
+  min-height: 44px;
+  max-height: 120px;
+  line-height: 1.55;
+  outline: none;
+  transition: border-color .2s;
+}
+#msgInput:focus { border-color: rgba(201,169,110,0.4); }
+#msgInput::placeholder { color: #383838; }
+
+.icon-btn {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: transform .15s, background .15s;
+}
+
+#sendBtn {
+  background: var(--gold);
+}
+#sendBtn:hover  { background: #d4b87c; transform: scale(1.05); }
+#sendBtn:active { transform: scale(0.94); }
+#sendBtn:disabled { background: #2a2a2a; cursor: not-allowed; transform: none; }
+#sendBtn svg { width:18px; height:18px; fill:#1a1a1a; }
+
+#debugBtn {
+  background: var(--surface3);
+  border: 0.5px solid rgba(255,255,255,0.08);
+}
+#debugBtn:hover { background: #2a2a2a; }
+#debugBtn svg { width:15px; height:15px; stroke: var(--text-dim); fill:none; }
+
+/* ── Footer ──────────────────────────────────────────────────────────────── */
+.footer {
+  text-align: center;
+  padding: 5px 0 7px;
+  font-size: 10px;
+  color: var(--text-dim);
+  background: #0e0e0e;
+  letter-spacing: 0.3px;
+  flex-shrink: 0;
+}
+
+/* ── Scrollbar ───────────────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  body { padding: 0; }
+  .shell { border-radius: 0; height: 100vh; max-height: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo">M</div>
+    <div class="header-info">
+      <h1>Mtindo Fashion Shop</h1>
+      <p>Msaidizi wa Mtindo · Fashion Assistant</p>
+    </div>
+    <div class="header-badges">
+      <span class="badge badge-lang">EN / SW</span>
+      <div class="status" title="Online"></div>
+    </div>
+  </div>
+
+  <!-- CHAT MESSAGES -->
+  <div class="chat" id="chat">
+    <div class="welcome">
+      <span class="welcome-icon">👗</span>
+      <h2>Karibu · Welcome</h2>
+      <p>Ask me anything about Mtindo Fashion Shop<br>in English or Swahili — niulize kwa Kiingereza au Kiswahili</p>
+    </div>
+  </div>
+
+  <!-- QUICK SUGGESTIONS -->
+  <div class="suggestions" id="suggestions">
+    <button class="sug" onclick="send('What products do you sell?')">👗 Products</button>
+    <button class="sug" onclick="send('Je, mnafanya delivery?')">🚚 Uwasilishaji</button>
+    <button class="sug" onclick="send('What sizes do you have?')">📏 Sizes</button>
+    <button class="sug" onclick="send('Ninaweza kurudisha bidhaa?')">↩️ Kurudisha</button>
+    <button class="sug" onclick="send('What payment methods do you accept?')">💳 Payment</button>
+    <button class="sug" onclick="send('Je, kuna discounts?')">🏷️ Discounts</button>
+    <button class="sug" onclick="send('How do I track my order?')">📦 Track Order</button>
+    <button class="sug" onclick="send('Ninaweza kuagiza custom design?')">✂️ Custom</button>
+    <button class="sug" onclick="send('What are your opening hours?')">🕐 Hours</button>
+    <button class="sug" onclick="send('Habari')">👋 Salamu</button>
+  </div>
+
+  <!-- DEBUG PANEL (toggle) -->
+  <div class="debug-panel" id="debugPanel">
+    <p id="debugContent">NLP debug info will appear here...</p>
+  </div>
+
+  <!-- INPUT -->
+  <div class="input-row">
+    <textarea id="msgInput"
+      placeholder="Andika hapa · Type here… (Enter to send)"
+      rows="1"
+      onkeydown="handleKey(event)"
+      oninput="autoResize(this)"
+    ></textarea>
+    <button class="icon-btn" id="debugBtn" title="Toggle NLP debug" onclick="toggleDebug()">
+      <svg viewBox="0 0 24 24" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15M14.25 3.104c.251.023.501.05.75.082M19.8 15l-1.348.03a24.026 24.026 0 01-4.902.3M5 14.5l-1.348.03a24.026 24.026 0 004.902.3m9.246 0l.3 4.17M5.652 14.83l-.3 4.17m9.846 0a24.26 24.26 0 01-4.396 0m4.396 0l.3 4.17M10.15 19H9m5.85 0H15"/>
+      </svg>
+    </button>
+    <button class="icon-btn" id="sendBtn" onclick="sendMessage()" title="Send">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+      </svg>
+    </button>
+  </div>
+
+  <div class="footer">
+    Powered by NLTK · TF-IDF · Cosine Similarity &nbsp;·&nbsp; Mtindo Fashion Shop © 2025
+  </div>
+</div>
+
+<script>
+const API = "/chat";
+let debugVisible = false;
+let busy = false;
+
+// ── Auto-resize textarea ──────────────────────────────────────────────────
+function autoResize(el) {
+  el.style.height = "auto";
+  el.style.height = Math.min(el.scrollHeight, 120) + "px";
+}
+
+// ── Enter key handling ────────────────────────────────────────────────────
+function handleKey(e) {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+}
+
+// ── Toggle debug panel ────────────────────────────────────────────────────
+function toggleDebug() {
+  debugVisible = !debugVisible;
+  document.getElementById("debugPanel").classList.toggle("visible", debugVisible);
+}
+
+// ── Quick suggestion button ───────────────────────────────────────────────
+function send(text) {
+  document.getElementById("msgInput").value = text;
+  sendMessage();
+}
+
+// ── Scroll chat to bottom ─────────────────────────────────────────────────
+function scrollBottom() {
+  const chat = document.getElementById("chat");
+  chat.scrollTop = chat.scrollHeight;
+}
+
+// ── Append a message bubble ───────────────────────────────────────────────
+function appendMessage(text, role, meta = null) {
+  const chat = document.getElementById("chat");
+
+  const row = document.createElement("div");
+  row.className = "msg-row " + role;
+
+  const av = document.createElement("div");
+  av.className = "avatar " + role;
+  av.textContent = role === "user" ? "U" : "M";
+
+  const bub = document.createElement("div");
+  bub.className = "bubble " + role;
+  // Render newlines and basic bold (**text**)
+  bub.innerHTML = text
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\n/g, "<br>");
+
+  row.appendChild(av);
+  row.appendChild(bub);
+  chat.appendChild(row);
+
+  // NLP meta chips (under bot bubbles)
+  if (role === "bot" && meta) {
+    const m = document.createElement("div");
+    m.className = "meta";
+    if (meta.category) {
+      m.innerHTML += `<span class="meta-chip chip-cat">${meta.category}</span>`;
+    }
+    const cc = meta.confidence === "high" ? "chip-high"
+             : meta.confidence === "medium" ? "chip-medium" : "chip-low";
+    m.innerHTML += `<span class="meta-chip ${cc}">${meta.confidence} (${(meta.score*100).toFixed(1)}%)</span>`;
+    m.innerHTML += `<span style="color:#333">${meta.lang.toUpperCase()} · ${meta.ms}ms</span>`;
+    chat.appendChild(m);
+  }
+
+  scrollBottom();
+  return row;
+}
+
+// ── Show/remove typing indicator ──────────────────────────────────────────
+function showTyping() {
+  const chat = document.getElementById("chat");
+  const row = document.createElement("div");
+  row.id = "typing";
+  row.className = "typing-row";
+  row.innerHTML = `
+    <div class="avatar bot">M</div>
+    <div class="typing-bubble">
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    </div>`;
+  chat.appendChild(row);
+  scrollBottom();
+}
+function removeTyping() {
+  const el = document.getElementById("typing");
+  if (el) el.remove();
+}
+
+// ── Main send function ────────────────────────────────────────────────────
+async function sendMessage() {
+  if (busy) return;
+  const input = document.getElementById("msgInput");
+  const text  = input.value.trim();
+  if (!text) return;
+
+  // Clear input
+  input.value = "";
+  input.style.height = "auto";
+  document.getElementById("sendBtn").disabled = true;
+  document.getElementById("suggestions").style.display = "none";
+  busy = true;
+
+  // Show user message
+  appendMessage(text, "user");
+  showTyping();
+
+  try {
+    const res  = await fetch(API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: text }),
+    });
+    const data = await res.json();
+    removeTyping();
+
+    if (data.error) {
+      appendMessage("⚠️ Server error: " + data.error, "bot");
+    } else {
+      const meta = {
+        category:   data.category,
+        confidence: data.confidence,
+        score:      data.score,
+        lang:       data.language,
+        ms:         data.elapsed_ms,
+      };
+      appendMessage(data.answer, "bot", meta);
+
+      // Update debug panel
+      if (debugVisible) {
+        document.getElementById("debugContent").innerHTML =
+          `<span>Query tokens:</span> ${data.tokens || "(none)"}<br>` +
+          `<span>Language:</span> ${data.language.toUpperCase()}<br>` +
+          `<span>Category:</span> ${data.category || "—"}<br>` +
+          `<span>Confidence:</span> ${data.confidence}<br>` +
+          `<span>Similarity score:</span> ${(data.score * 100).toFixed(2)}%<br>` +
+          `<span>Response time:</span> ${data.elapsed_ms}ms`;
+      }
+    }
+  } catch (err) {
+    removeTyping();
+    appendMessage(
+      "Samahani, kuna tatizo la seva. / Sorry, server error.\n\nPlease make sure the Flask server is running:\n<code>python app.py</code>",
+      "bot"
+    );
+  }
+
+  document.getElementById("sendBtn").disabled = false;
+  busy = false;
+}
+
+// ── Initial bot greeting ──────────────────────────────────────────────────
+window.addEventListener("load", () => {
+  setTimeout(() => {
+    appendMessage(
+      "Habari! 👋 Mimi ni Mtindo Bot — msaidizi wako wa mtindo wa Afrika.\n\n" +
+      "Hello! I'm Mtindo Bot — your African fashion assistant.\n\n" +
+      "Ask me anything about our shop in **English or Swahili**. " +
+      "Use the buttons below to get started! 😊",
+      "bot",
+      { category: "Greeting", confidence: "high", score: 1.0, lang: "en/sw", ms: 0 }
+    );
+  }, 400);
+});
+</script>
+</body>
+</html>
