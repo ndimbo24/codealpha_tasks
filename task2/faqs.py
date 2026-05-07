@@ -1,7 +1,6 @@
 
 
 FAQS = [
-    # ── PRODUCTS ──────────────────────────────────────────────────────────────
     {
         "id": 1,
         "category": "Products",
@@ -36,7 +35,6 @@ FAQS = [
             "Tembelea Dar es Salaam, Arusha, au Mwanza — au nunua mtandaoni! "
         ),
     },
-    # ── SIZES ─────────────────────────────────────────────────────────────────
     {
         "id": 2,
         "category": "Sizes",
@@ -74,7 +72,6 @@ FAQS = [
             "Piga WhatsApp +255 700 123 456 na tutakusaidia! "
         ),
     },
-    # ── DELIVERY ──────────────────────────────────────────────────────────────
     {
         "id": 3,
         "category": "Delivery",
@@ -126,7 +123,6 @@ FAQS = [
             "Utapokea masasisho ya SMS na WhatsApp kwa oda yako."
         ),
     },
-    # ── RETURNS ───────────────────────────────────────────────────────────────
     {
         "id": 4,
         "category": "Returns",
@@ -171,7 +167,6 @@ FAQS = [
             "Tutakusaidia haraka! "
         ),
     },
-    # ── PAYMENT ───────────────────────────────────────────────────────────────
     {
         "id": 5,
         "category": "Payment",
@@ -224,7 +219,6 @@ FAQS = [
             "Unahitaji msaada wa malipo? WhatsApp +255 700 123 456! 😊"
         ),
     },
-    # ── DISCOUNTS ─────────────────────────────────────────────────────────────
     {
         "id": 6,
         "category": "Discounts",
@@ -267,7 +261,6 @@ FAQS = [
             "usikose ofa yoyote! "
         ),
     },
-    # ── CUSTOM ORDERS ─────────────────────────────────────────────────────────
     {
         "id": 7,
         "category": "Custom Orders",
@@ -309,7 +302,6 @@ FAQS = [
             "Anza oda yako ya custom kwa WhatsApp: +255 700 123 456 "
         ),
     },
-    # ── CONTACT ───────────────────────────────────────────────────────────────
     {
         "id": 8,
         "category": "Contact",
@@ -356,7 +348,6 @@ FAQS = [
             "Kawaida tunajibu ndani ya dakika 30 kwa WhatsApp! "
         ),
     },
-    # ── CARE INSTRUCTIONS ─────────────────────────────────────────────────────
     {
         "id": 9,
         "category": "Care",
@@ -409,7 +400,6 @@ FAQS = [
             "  • Tumia hangers za mto kwa mavazi na suti"
         ),
     },
-    # ── ORDER TRACKING ────────────────────────────────────────────────────────
     {
         "id": 10,
         "category": "Order Tracking",
@@ -448,7 +438,6 @@ FAQS = [
             "Oda yako ikichelewa, wasiliana nasi mara moja na tutachunguza! 🔍"
         ),
     },
-    # ── GREETINGS ────────────────────────────────────────────────────────────
     {
         "id": 11,
         "category": "Greeting",
@@ -480,7 +469,6 @@ FAQS = [
             "Unataka kujua nini? Uliza kwa Kiingereza au Kiswahili! "
         ),
     },
-    # ── OPENING HOURS ─────────────────────────────────────────────────────────
     {
         "id": 12,
         "category": "Hours",

@@ -1,21 +1,14 @@
-"""
-nlp_engine.py — NLP Processing & FAQ Matching Engine
-Full NLP pipeline: pure Python + scikit-learn (no NLTK required)
-"""
-
 import re
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from faqs import FAQS
 
-# ── Regex tokenizer ──────────────────────────────────────────────────────────
 _WORD_RE = re.compile(r"[a-z]+")
 
 def tokenize(text):
     return _WORD_RE.findall(text.lower())
 
-# ── Stopwords ─────────────────────────────────────────────────────────────────
 ENGLISH_SW = {
     "a","an","the","and","or","but","if","in","on","at","to","for","of","with",
     "by","from","as","is","was","are","were","be","been","being","have","has",
@@ -37,7 +30,6 @@ SWAHILI_SW = {
 }
 ALL_SW = ENGLISH_SW | SWAHILI_SW
 
-# ── Porter Stemmer (pure Python) ──────────────────────────────────────────────
 class PorterStemmer:
     V = set("aeiou")
     def _has_vowel(self, w): return any(c in self.V for c in w)
@@ -65,9 +57,7 @@ class PorterStemmer:
 
 _stemmer = PorterStemmer()
 
-# ── Preprocessing pipeline ───────────────────────────────────────────────────
 def preprocess(text, stem=True):
-    """Lowercase → clean → tokenize → remove stopwords → stem"""
     text = text.lower()
     text = re.sub(r"https?://\S+|www\.\S+|\S+@\S+|\+?\d[\d\s\-]{6,}", " ", text)
     text = re.sub(r"[^a-z\s]", " ", text)
@@ -77,7 +67,6 @@ def preprocess(text, stem=True):
         tokens = [_stemmer.stem(t) for t in tokens]
     return " ".join(tokens)
 
-# ── Language detection ────────────────────────────────────────────────────────
 _SW_VOCAB = {
     "habari","karibu","asante","tafadhali","samahani","pamoja","bidhaa",
     "nguo","gauni","vipimo","uwasilishaji","malipo","kurudisha","punguzo",
@@ -93,9 +82,7 @@ def detect_language(text):
     if any(t.startswith(p) for t in tokens for p in _SW_PREFIXES): return "sw"
     return "en"
 
-# ── FAQ Matcher ───────────────────────────────────────────────────────────────
 class FAQMatcher:
-    """TF-IDF vectorization + cosine similarity FAQ matching."""
     THRESH_LOW  = 0.08
     THRESH_HIGH = 0.22
 
@@ -108,7 +95,7 @@ class FAQMatcher:
         self._build()
 
     def _build(self):
-        print("  [NLP] Building TF-IDF corpus...")
+        print("  Building message index...")
         for i, faq in enumerate(self.faqs):
             for q in faq["questions"]:
                 self._corpus.append(preprocess(q))
@@ -116,7 +103,7 @@ class FAQMatcher:
         self._vec = TfidfVectorizer(ngram_range=(1,2), min_df=1,
                                     sublinear_tf=True, max_features=8000)
         self._mat = self._vec.fit_transform(self._corpus)
-        print(f"  [NLP] Ready: {len(self._corpus)} vectors, "
+        print(f"  Ready: {len(self._corpus)} vectors, "
               f"{self._mat.shape[1]} features")
 
     def match(self, query):
@@ -168,10 +155,9 @@ def get_matcher():
         _instance = FAQMatcher(FAQS)
     return _instance
 
-# ── Self-test ──────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
     print("\n" + "="*60)
-    print("  Mtindo NLP Engine — Self Test")
+    print("  Mtindo Message Matcher - Self Test")
     print("="*60)
     m = get_matcher()
     tests = [

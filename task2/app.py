@@ -1,13 +1,10 @@
-"""
-app.py — Flask Backend for Mtindo Fashion FAQ Chatbot
-"""
 from flask import Flask, request, jsonify, send_from_directory
 import time, traceback, os
 from nlp_engine import get_matcher
 
 app = Flask(__name__, static_folder="static")
 
-print("\n🔄 Loading NLP engine...")
+print("\n🔄 Loading message matcher...")
 matcher = get_matcher()
 print("✅ Ready!\n")
 

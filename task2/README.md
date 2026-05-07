@@ -1,79 +1,85 @@
-# Mtindo Fashion FAQ Chatbot 👗
-**Bilingual (English + Swahili) FAQ Chatbot using NLP**
+# Mtindo Fashion FAQ Chatbot
 
-A full NLP-powered FAQ chatbot for a fashion e-commerce shop.
-Implements the complete text processing pipeline: tokenization, stopword removal,
-stemming, TF-IDF vectorization, and cosine similarity matching.
+**Bilingual English and Swahili FAQ chatbot**
+
+A customer support chatbot for a fashion e-commerce shop. It answers common
+questions about products, sizes, delivery, returns, payments, discounts, custom
+orders, contact details, care instructions, tracking, greetings, and opening
+hours.
 
 ---
 
 ## Project Structure
 
-```
+```text
 mtindo_bot/
-├── faqs.py            ← FAQ knowledge base (EN + SW questions & answers)
-├── nlp_engine.py      ← NLP pipeline: preprocess → TF-IDF → cosine similarity
-├── app.py             ← Flask REST API backend
-├── requirements.txt   ← Python dependencies
-├── README.md          ← This file
-└── static/
-    └── index.html     ← Chat UI (HTML/CSS/JS)
++-- faqs.py
++-- matcher_engine.py
++-- app.py
++-- requirements.txt
++-- README.md
++-- static/
+    +-- index.html
 ```
 
 ---
 
-## NLP Pipeline (nlp_engine.py)
+## Message Matching
 
-### Step 1 — Text Preprocessing
+### Step 1 - Text Preprocessing
+
 | Operation | Implementation |
 |---|---|
 | Lowercase | `text.lower()` |
 | Remove URLs/emails/phones | `re.sub(...)` |
-| Remove punctuation & digits | `re.sub(r"[^a-z\s]", ...)` |
+| Remove punctuation and digits | `re.sub(r"[^a-z\s]", ...)` |
 | Tokenization | Regex word tokenizer `[a-z]+` |
-| Stopword removal | English + Swahili stopword sets |
-| Stemming | Custom Porter Stemmer (pure Python) |
+| Stopword removal | English and Swahili stopword sets |
+| Stemming | Custom pure-Python stemmer |
 
-### Step 2 — TF-IDF Vectorization
-- `TfidfVectorizer` from scikit-learn
-- `ngram_range=(1,2)` — unigrams + bigrams
-- `sublinear_tf=True` — log(1+tf) dampens common terms
-- Fitted on all 160+ FAQ question variants
+### Step 2 - Query Matching
 
-### Step 3 — Cosine Similarity Matching
-```
-similarity = (query_vector · faq_vector) / (|query| × |faq|)
-```
-- Returns score 0.0–1.0
-- Score < 0.08 → no match (fallback message)
-- Score 0.08–0.22 → medium confidence
-- Score ≥ 0.22 → high confidence
+- Builds a searchable index from FAQ question variants
+- Compares incoming questions with known FAQ entries
+- Selects the closest matching category
 
-### Step 4 — Language Detection
-- Swahili indicator vocabulary (morphologically distinct words)
-- Prefix detection (`mnaf-`, `ninaw-`, `nawez-`, etc.)
-- Returns `'sw'` or `'en'` → selects correct answer language
+### Step 3 - Confidence Scoring
+
+- Returns score 0.0-1.0
+- Score < 0.08: no match
+- Score 0.08-0.22: medium confidence
+- Score >= 0.22: high confidence
+
+### Step 4 - Language Detection
+
+- Checks Swahili indicator vocabulary
+- Checks common Swahili prefixes
+- Returns `sw` or `en` to choose the answer language
 
 ---
 
 ## Setup & Run
 
 ### 1. Install dependencies
+
 ```bash
 pip install flask scikit-learn numpy
 ```
 
-### 2. Test the NLP engine
+### 2. Test the matching engine
+
 ```bash
-python nlp_engine.py
+python matcher_engine.py
 ```
 
 ### 3. Start the server
+
 ```bash
 python app.py
 ```
 
 ### 4. Open the chat UI
+
 Visit: **http://localhost:5000**
 
 ---
@@ -81,19 +87,23 @@ Visit: **http://localhost:5000**
 ## API Endpoint
 
 ### POST /chat
+
 **Request:**
+
 ```json
 { "message": "What sizes do you have?" }
 ```
+
 **Response:**
+
 ```json
 {
-  "answer":     "We stock a full range of sizes...",
-  "category":   "Sizes",
-  "language":   "en",
+  "answer": "We stock a full range of sizes...",
+  "category": "Sizes",
+  "language": "en",
   "confidence": "high",
-  "score":      1.0,
-  "tokens":     "size stock rang",
+  "score": 1.0,
+  "tokens": "size stock rang",
   "elapsed_ms": 4.2
 }
 ```
@@ -101,7 +111,8 @@ Visit: **http://localhost:5000**
 ---
 
 ## FAQ Categories
-| # | Category | Questions |
+
+| # | Category | Example Questions |
 |---|---|---|
 | 1 | Products | What do you sell? / Mnatoa bidhaa gani? |
 | 2 | Sizes | What sizes? / Vipimo gani? |
@@ -119,8 +130,9 @@ Visit: **http://localhost:5000**
 ---
 
 ## Technologies
-- **Python 3.11+**
-- **scikit-learn** — TF-IDF, cosine similarity
-- **numpy** — matrix operations
-- **Flask** — REST API server
-- **HTML/CSS/JS** — Chat UI (no framework needed)
+
+- Python 3.11+
+- Flask
+- scikit-learn
+- numpy
+- HTML/CSS/JS
